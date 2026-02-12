@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{CS440 Assignment 1}
+\author{Shruti Shukla, Yakelin Melendez-Gonzalez, Maruah Abedin}
+
+\begin{document}
+
+\maketitle
+
+\section{Part 0: Gridworld Generation}
+
+We generated 50 independent $101 \times 101$ gridworlds using a depth-first search (DFS) based exploration process. Initially, all cells were marked as unvisited. The algorithm begins from a randomly selected cell, marks it as visited, and assigns it as unblocked. From there, a random unvisited neighbor is selected.
+
+When a cell is first visited, it is marked as blocked with probability $0.3$ and unblocked with probability $0.7$. Unblocked cells are added to the DFS stack to continue exploration. Whenever a cell has no unvisited neighbors, the algorithm backtracks until it finds a cell with remaining unvisited neighbors. This process continues until all cells in the grid have been visited.
+
+This procedure naturally produces maze- or corridor-like environments. DFS tends to create long, structured passages, while the probabilistic blocking introduces stochastic obstacle placement. Each gridworld is generated using a fixed random seed to ensure full reproducibility across runs.
+
+The generated gridworlds are saved to disk and can be reloaded for visualization and experimentation.
+
+\section{Part 1: Conceptual Questions}
+
+\subsection{(a) Why is the first move east instead of north in Figure 8?}
+
+In Figure 8, the agent initially doesn't know which cells are blocked. Under the freespace assumption, all unobserved cells are treated as unblocked. The agent therefore runs A* search using the Manhattan distance heuristic to compute a shortest presumed-unblocked path to the target.
+
+From the start cell, moving east and moving north both incur the same step cost, giving identical $g$-values. Since the Manhattan heuristic depends only on grid distance to the target, both successors also have identical $h$-values. Consequently, their $f = g + h$ values are equal.
+
+When multiple states share the same smallest $f$-value, A* relies on its tie-breaking rule. In the assignment examples, ties are broken in favor of states with larger $g$-values, with any remaining ties resolved consistently. Under this deterministic ordering, the east successor is selected before the north successor.
+
+Thus, the initial move east is not inherently better than moving north. It is simply a consequence of tie-breaking among equally optimal successors under the freespace assumption.
+
+\subsection{(b) Proof that Repeated A* terminates in finite time and makes at most $U^2$ moves}
+
+Let $U$ denote the number of unblocked cells in the true gridworld.
+
+Repeated A* alternates between planning and execution. At each planning phase, A* computes a shortest presumed-unblocked path based on the agent’s current knowledge. The agent then follows this path until either the target is reached or a previously unknown blocked cell invalidates the path.
+
+Termination follows from the finiteness of the gridworld. Each time a planned path fails, the agent observes at least one previously unknown blocked cell. Since the number of cells is finite, only finitely many such discoveries can occur. Therefore, only finitely many replanning events are possible, and the algorithm must terminate in finite time.
+
+To bound the number of moves, observe that within any single planning episode, the agent follows a shortest path. Shortest paths are simple, meaning no cell is visited more than once. Since there are at most $U$ unblocked cells, the number of moves in one episode is at most $U$.
+
+A new planning episode occurs only when new information invalidates the current path. Because the gridworld is finite, the number of such episodes is bounded. In the worst case, there can be at most $U$ planning episodes that result in movement.
+
+Hence,
+
+\[
+\text{total moves} \le U \times U = U^2.
+\]
+
+Therefore, the number of moves made by Repeated A* is bounded from above by $U^2$.
+
+\section{Part 2: Effects of Tie-Breaking}
+
+Repeated Forward A* requires a tie-breaking strategy when multiple frontier states share the same minimum $f = g + h$ value. We implemented two variants that differ only in how ties are resolved:
+
+\begin{itemize}
+    \item Favor smaller $g$-values (shallower nodes)
+    \item Favor larger $g$-values (deeper nodes)
+\end{itemize}
+
+Both variants were evaluated on the same set of 50 deterministic $101 \times 101$ gridworlds generated in Part 0. To avoid runtime variability, performance was measured using the total number of expanded cells, summed across all A* searches performed during execution.
+
+\subsection{Results}
+
+Across the 50 gridworlds, the variant favoring larger $g$-values consistently expanded fewer cells. The mean number of expanded cells was substantially lower when ties were broken in favor of larger $g$-values compared to smaller $g$-values. The mean number of expanded cells was 66295.46 for the smaller-$g$ variant and 48419.82 for the larger-$g$ variant.
+
+\subsection{Explanation}
+
+The observed difference is a direct consequence of how A* behaves when many states share identical $f$-values. Favoring smaller $g$-values biases the search toward states closer to the start, which produces a broader, wavefront-like expansion pattern. This behavior resembles breadth-first exploration within an equal-$f$ contour and often leads to expanding many laterally equivalent states.
+
+In contrast, favoring larger $g$-values prioritizes deeper nodes along candidate paths. This biases the search toward continuing progress toward the goal rather than expanding outward near the start. In grid environments using the Manhattan distance heuristic, large regions of equal $f$-values frequently arise, making the tie-breaking rule a dominant factor in determining the search footprint.
+
+Favoring larger $g$-values therefore reduces unnecessary lateral exploration and typically results in fewer expanded cells overall, which aligns with the empirical results.
+
+
+\end{document}
