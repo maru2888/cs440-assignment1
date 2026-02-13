@@ -34,8 +34,8 @@ def main():
     print("\nASCII preview:")
     render_ascii(test_world, start=start, goal=goal)
 
-    #print("\nMatplotlib preview:")
-    #render_matplotlib(test_world, start=start, goal=goal)
+    print("\nMatplotlib preview:")
+    render_matplotlib(test_world, start=start, goal=goal)
 
     run_part2()
     run_part3()
