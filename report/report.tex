@@ -76,4 +76,16 @@ In contrast, favoring larger $g$-values prioritizes deeper nodes along candidate
 Favoring larger $g$-values therefore reduces unnecessary lateral exploration and typically results in fewer expanded cells overall, which aligns with the empirical results.
 
 
+\section{Part 3: Forward vs. Backward}
+
+We compared Repeated Forward A* and Repeated Backward A* in the standard unknown gridworld setting. The agent initially assumes all cells are unblocked, senses the blockage status of its 4 neighboring cells at each step, updates its internal map, and replans whenever the current path becomes invalid. In both variants, ties were broken in favor of larger g-values, as specified in the assignment.
+
+Performance was measured by the total number of expanded cells over the entire execution.
+
+Both algorithm were evaluated on the same set of 50 deterministic 101 * 101 gridworlds generated in Part 0. Repeated Forward A* expanded an average of 25,536.06 cells, while Repeated Backward A* expanded an average of 164,962.08 cells.
+
+These results show that Repeated Backward A* is significantly less efficient than Repeated Forward A* in this setting.The key reason for this difference lies in the direction of search relative to the agent's knowledge. Repeated Forward A* plans from the agent's current position toward the goal, which focuses the search on regions that are gradually being revealed through sensing.
+
+In contrast, Repeated Backward A* plans from the goal toward the agent's current position, causing it to explore large regions near the goal that the agent has not yet discovered and may not be able to reach. As a result, Backward A* performs substantially more unnecessary search, leading to a much higher number of expanded cells.
+
 \end{document}
