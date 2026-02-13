@@ -88,4 +88,28 @@ These results show that Repeated Backward A* is significantly less efficient tha
 
 In contrast, Repeated Backward A* plans from the goal toward the agent's current position, causing it to explore large regions near the goal that the agent has not yet discovered and may not be able to reach. As a result, Backward A* performs substantially more unnecessary search, leading to a much higher number of expanded cells.
 
+\section{Part 4: Heuristics in Adaptive A*}
+
+\subsection{Consistency of Manhattan Distance}
+
+In this project, A* uses the Manhattan distance as its heuristic, which is the sum of the horizontal and vertical distances from a cell to the goal. The agent can only move in the four main directions, and each move has a cost of 1.
+
+A heuristic is called \emph{consistent} if, when moving from a cell to one of its neighbors, the heuristic value does not decrease by more than the cost of that move. In other words, the estimated distance to the goal should change smoothly between neighboring cells.
+
+When the agent moves to a neighboring cell, either the $x$ or $y$ coordinate changes by exactly 1. This means the Manhattan distance to the goal can only change by at most 1 in a single move. Since each move also costs 1, the Manhattan distance heuristic satisfies the consistency condition.
+
+Therefore, the Manhattan distance is a consistent heuristic in gridworlds where movement is limited to the four main directions. Because consistent heuristics are also admissible, the Manhattan distance also never overestimates the true shortest path to the goal.
+
+\subsection{Consistency of the Adaptive A* Heuristic}
+
+Adaptive A* updates the heuristic values after each A* search. For each expanded state $s$, the new heuristic is computed as:
+\[
+h_{\text{new}}(s) = g(\text{goal}) - g(s),
+\]
+where $g(s)$ is the cost to reach $s$ and $g(\text{goal})$ is the cost of the path found to the goal.
+
+We start with a consistent heuristic (the Manhattan distance). The updated heuristic is based on these same path costs, so the difference between the heuristic values of two neighboring cells cannot be larger than the cost of moving between them. This means the updated heuristic also satisfies the consistency condition.
+
+Therefore, Adaptive A* keeps the heuristic consistent even after updating it. Since the heuristic remains consistent, it also remains admissible. This ensures that each A* search still finds an optimal path for the currently known grid, while usually expanding fewer states as the heuristic becomes more accurate over time.
+
 \end{document}
