@@ -5,7 +5,7 @@ from algorithms.repeated_backward import repeated_backward_astar
 
 from algorithms.repeated_forward_sense import repeated_forward_astar_sense
 from algorithms.repeated_backward_sense import repeated_backward_astar_sense
-
+from algorithms.repeated_forward_adaptive_sense import repeated_forward_adaptive_astar_sense
 
 DATA_DIR = "data/grids"
 
@@ -59,3 +59,32 @@ def run_part3():
     print(f"Mean expanded (forward, larger g): {sum(forward)/len(forward):.2f}")
     print(f"Mean expanded (backward, larger g): {sum(backward)/len(backward):.2f}")
 
+#Part 5
+def run_part5():
+    forward = []
+    adaptive = []
+
+    start = (0, 0)
+    goal = (100, 100)
+
+    for i in range(50):
+        print(f"[Part 5] Grid {i}: loading...")
+        true_grid = load_world(f"{DATA_DIR}/world_{i:02d}.txt")
+
+        true_grid[0][0] = 0
+        true_grid[100][100] = 0
+
+        print(f"[Part 5] Grid {i}: repeated forward start")
+        _, exp_f, _ = repeated_forward_astar_sense(start, goal, true_grid, "larger_g")
+        print(f"[Part 5] Grid {i}: repeated forward done (expanded={exp_f})")
+
+        print(f"[Part 5] Grid{i}: adaptive start")
+        _, exp_a, _ = repeated_forward_adaptive_astar_sense(start, goal, true_grid, "larger_g")
+        print(f"[Part 5] Grid {i}: adaptive done (expanded={exp_a})")
+
+        forward.append(exp_f)
+        adaptive.append(exp_a)
+
+    print("\n===== PART 5 RESULTS =====")
+    print(f"Mean expanded (repeated forward): {sum(forward)/len(forward):.2f}")
+    print(f"Mean expanded (adaptive A*): {sum(adaptive)/len(adaptive):.2f}")

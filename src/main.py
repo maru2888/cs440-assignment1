@@ -3,7 +3,7 @@
 from env.generator import generate_worlds
 from env.io import save_world, load_world
 from env.visualize import render_ascii, render_matplotlib
-from experiments import run_part2, run_part3
+from experiments import run_part2, run_part3, run_part5
 
 import os
 
@@ -26,7 +26,7 @@ def main():
     else:
         print("Grids already exist — skipping generation.")
 
-    test_world = load_world(f"{DATA_DIR}/world_00.txt")
+    test_world = load_world(f"{DATA_DIR}/world_07.txt")
 
     start = (0, 0)
     goal = (100, 100)
@@ -39,6 +39,8 @@ def main():
 
     run_part2()
     run_part3()
+    run_part5()
+    
 
 
 

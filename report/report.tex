@@ -112,4 +112,77 @@ We start with a consistent heuristic (the Manhattan distance). The updated heuri
 
 Therefore, Adaptive A* keeps the heuristic consistent even after updating it. Since the heuristic remains consistent, it also remains admissible. This ensures that each A* search still finds an optimal path for the currently known grid, while usually expanding fewer states as the heuristic becomes more accurate over time.
 
+\section{Part 5: Heuristics in the Adaptive A*}
+In part 5, we implemented and compared Repeated Forward A* and Adaptive A* in the unknown grid world setting. The agent assumes all cells are unblocked to begin with in both algorithms. Sensing neighboring cells, the agent updates it's knowledge of the grid, and replans it's path when the current path it is on becomes invalid.
+
+Both algorithms break ties among cells with the same $f$-values in favor of cells with larger $g$-values and remaining ties in an identical way. 
+
+The Adaptive A* algorithm differs from Repeated Forward A* by updating heuristic values after each A* search. For each expanded state $s$, the heuristic is computed as:
+\[
+h(s) = g(\text{goal}) - g(s),
+\]
+where $g(s)$ is the cost to reach $s$ during the most recent search. The updated heuristic valuees are reused when replanning paths.
+
+\subsection{Results}
+Both algorithms were evaluated on the same 50 $101 \times 101$ gridworlds generated in part 0. We measured the performance of the algorithms by using the total number of cells expanded across the execution.
+
+Repeated Forward A* yielded an average of 25,536.06 cells expanded, whereas Adaptive A* averaged 24,664.80 cells expanded. From this we observed that Adaptive A* produced roughly 871 fewer cells than Repeated Forward A*.
+
+Thus, Adaptive A* resulted in a 3.4\% reduction of number of expanded cells.
+
+Adaptive A* yielded these results because it reuses information stored from previous searches. After each step during replanning, the heuristic values of expanded states are updated to accurately reflect the cost of the discovered path. Therefore, Adaptive A* is better informed and can accurately determine the true shortest paths.
+
+These results are better reflected on more difficult grid worlds that may require frequent replanning as Adaptive A* reduces redundancy, expanding fewer states. On easier grid worlds, Adaptive A* and Repeated Forward A* behave similarly as the agent reaches the goal state with minimal or no replanning.
+
+\section{Part 6: Statistical Significance}
+
+To determine whether the performance difference between two algorithms is systematic or due to sampling noise, statistical hypothesis tests can be applied. 
+
+Being that both algorithms are evaluated and compared using the same 50 grid worlds, the measurements are naturally paired. Thus, in such a case a paired $t$-test could be applied. A paired $t$-test is a statistical method used to determine whether the mean difference between pairs of measurements is zero or not. 
+
+A mean difference of zero would imply that both algorithms perform equally.
+
+If performing such a test, for each gridworld $i$, we let $X_i$ denote the number of expanded cells for Repeated Forward A* and $Y_i$ for Adaptive A*.
+
+We begin by defining the paired differences: 
+\[
+D_i = X_i - Y_i.
+\]
+
+The null hypothesis is:
+\[
+H_0: \mu_D = 0,
+\]
+this states there is no systematic difference in performance.
+
+The alternate hypothesis is:
+\[
+H_1: \mu_D > 0,
+\]
+this states that Adaptive A* expands fewer cells on average.
+
+A paired $t$-test would then be performed on the differences.
+
+Computing the test statistic:
+The sample mean of the differences would be
+  \[
+  \bar{D} = \frac{1}{n} \sum_{i=1}^{n} D_i
+  \]
+
+which would tell us how much better Adaptive A* is on average. 
+
+The sample standard deviation of the differences would be $s_D$, letting us know how consistent the differences are.
+
+The test statistic is then:
+\[
+t = \frac{\bar{D}}{s_D / \sqrt{n}},
+\]
+where $n = 50$
+
+Under the null hypothesis, the test statistic follows a $t$-distribution with $n-1$ degrees of freedom. This is used to compute a $p$-value, which measures how likely it is to observe our results if there were no true difference between the algorithms. 
+
+If the $p$-value is less than a chosen significance level (e.g., $\alpha = 0.05$), the null hypothesis is rejected and can conclude that the difference is statistically significant.
+
+Ultimately, such a test would allow us to determine whether the reduced number of cells expanded by Adaptive A* is statistically significant or simply due to random variation in the sampled gridworlds.
+
 \end{document}
