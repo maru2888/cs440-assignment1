@@ -9,7 +9,6 @@ import os
 
 DATA_DIR = "data/grids"
 
-
 def main():
     os.makedirs(DATA_DIR, exist_ok=True)
 

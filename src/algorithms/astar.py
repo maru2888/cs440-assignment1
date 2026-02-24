@@ -3,7 +3,6 @@
 import heapq
 from env.grid import neighbors, BLOCKED
 
-
 def manhattan(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
